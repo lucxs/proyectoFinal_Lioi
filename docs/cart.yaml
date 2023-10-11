@@ -1,0 +1,312 @@
+paths:
+  /api/carts/:
+    get:
+      summary: Listar todos los carritos activos
+      security:
+        - bearerAuth: []
+          roles:
+            - admin
+      tags:
+        - Carts
+      responses:
+        200:
+          description: Lista de Carts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Cart'
+        500:
+          description: Error del servidor
+    post:
+      summary: Creando y añadiendo carts
+      tags:
+        - Carts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/requestBodies/addCart'
+      responses:
+        200:
+          description: Carrito agregado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+        
+        500:
+          description: Error del servidor
+  /api/carts/{:cid}:
+    get:
+      summary: Listando carrito con los prods
+      tags:
+        - Carts
+      parameters:
+        - in: path
+          name: cid
+          required: true
+          description: ID del cart
+          schema:
+            type: ObjectId
+      responses:
+        200:
+          description: Cart encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+        404:
+          description: Cart no encontrado
+        500:
+          description: Error del servidor  
+    put:
+      summary: Actualizando lista de productos en cart, eliminar o agregar manualmente  
+      tags:
+        - Carts
+      parameters:
+        - in: path
+          name: cid
+          required: true
+          description: ID del carrito
+          schema:
+            type: ObjectId
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/requestBodies/Product'
+      responses:
+        200:
+          description: Producto actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+        
+        500:
+          description: Error del servidor
+    delete:
+      summary: vaciar carrito seleccionado
+      tags:
+        - Cart
+      parameters:
+        - in: path
+          name: cid
+          required: true
+          description: ID del cart
+          schema:
+            type: ObjectId
+      responses:
+        200:
+          description: Carrito vaciado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+        
+        500:
+          description: Error del servidor 
+  /api/carts/{:cid}/product/{:pid}:
+    post:
+      summary: Agregando Producto a una cart segun Cart ID
+      tags:
+        - Carts
+        - Prods
+      parameters:
+        - in: path
+          name: cid
+          required: true
+          description: ID del cart
+          schema:
+            type: ObjectId
+        - in: path
+          name: pid
+          required: true
+          description: ID del producto
+          schema:
+            type: ObjectId
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/requestBodies/addCart'
+                - $ref: '#/components/requestBodies/Product'
+      responses:
+        200:
+          description: Carrito agregado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+        
+        500:
+          description: Error del servidor
+    delete: 
+      summary: Eliminar del carrito producto seleccionado
+      tags:
+        - Carts
+        - Prods
+      parameters:
+        - in: path
+          name: cid
+          required: true
+          description: ID del cart
+          schema:
+            type: ObjectId
+        - in: path
+          name: pid
+          required: true
+          description: ID del producto
+          schema:
+            type: ObjectId
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+                - $ref: '#/components/requestBodies/Product'
+      responses:
+        200:
+          description: Producto eliminado correctamente del cart seleccionado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+        
+        500:
+          description: Error del servidor          
+  /api/carts/{:cid}/product/{:pid}/{:quantity}: 
+    put:
+      summary: Update quantity de un producto de una cart seleccionada
+      tags:
+        - Carts
+        - Prods
+        - quantity
+      parameters:
+        - in: path
+          name: cid
+          required: true
+          description: ID del cart
+          schema:
+            type: ObjectId
+        - in: path
+          name: pid
+          required: true
+          description: ID del Producto
+          schema:
+            type: ObjectId
+        - in: path
+          name: quantity
+          required: true
+          description: cantidad del producto
+          schema:
+            type: ObjectId
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/requestBodies/Product'
+      responses:
+        200:
+          description: Carrito agregado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+        
+        500:
+          description: Error del servidor            
+components:
+  schemas:
+    Cart:
+      type: object
+      properties:
+        _id:
+          type: ObjectId
+          description: ID del cart (autogenerado por MongoDB)
+        title:
+          type: string
+          description: Nombre del cart
+        quantity:
+          type: number
+          description: quantity del cart
+        products:
+          type: ObjectId
+          description: lista de productos agregados en el carrito
+      example:
+        id: ObjectId(650f38b79585133ef1b6020d)
+        title: "user"
+        quantity: 0
+        products: []
+
+  requestBodies:
+    addCart:
+      type: object
+      properties:
+        title:
+          type: String
+          description: "Nombre del cart"
+        quantity:
+          type: number
+          description: "quantity del cart"
+        products:
+          type: array
+          description: "array de prods del cart" 
+      example:
+        id: ObjectId(650f38b79585133ef1b6020d)
+        title: "user"
+        quantity: 0
+        products: []
+    Product:
+      type: object
+      properties:
+        title:
+          type: String
+          description: "Nombre del producto"
+        description:
+          type: String
+          description: "descripción del producto"
+        price:
+          type: number
+          description: "Precio del producto"
+        thumbnail:
+          type: String
+          description: "Miniatura del producto"
+        code:
+          type: number
+          description: "Codigo del producto"
+        stock:
+          type: number
+          description: "stock disponible del producto"
+        status:
+          type: boolean
+          description: "estado del producto"
+        marca:
+          type: String
+          description: "Marca del producto"
+        carts:
+          type: ObjectId
+          description: "id referenciando al carrito donde será agregado el producto"
+        owner:
+          type: ObjectId
+          description: "Id del usser que creo el producto"
+      example:
+        title: "Lentes de Sol"
+        description: "Lentes de sol polarizados"
+        price: 78500
+        thumbnail: "url"
+        code: 8855221144
+        stock: 5
+        status: true
+        marca: "levis"
+        carts: []
+        owner: 650f5a563ceb9f7d4297643e
+
+          

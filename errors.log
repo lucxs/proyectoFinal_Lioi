@@ -1,0 +1,16 @@
+{"level":"error","message":"Error sistema"}
+{"level":"fatal","message":"fatalisima"}
+{"level":"error","message":"Error sistema"}
+{"level":"fatal","message":"fatalisima"}
+{"level":"error","message":"Error sistema"}
+{"level":"fatal","message":"fatalisima"}
+{"level":"error","message":"Error sistema"}
+{"level":"fatal","message":"fatalisima"}
+{"level":"error","message":"Error sistema","test":"test"}
+{"level":"fatal","message":"fatalisima"}
+{"level":"error","message":"Algo salió mal => Newuser is not defined","stack":"ReferenceError: Newuser is not defined\n    at file:///C:/Users/Urano/Documents/coderhouse/backend/Entregables/Entregable_12/src/routers/views.router.js:44:54\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"level":"error"}
+{"level":"error"}
+{"level":"error"}
+{"level":"error"}
+{"level":"error"}

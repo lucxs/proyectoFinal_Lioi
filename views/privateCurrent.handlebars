@@ -1,0 +1,36 @@
+<section class="current"><h1>Mi Perfil: {{user.user.first_name }} {{user.user.last_name}}</h1>
+
+    {{#if ownProds}}
+            <h3>Mis productos</h3>
+        {{#each ownProds}}
+        <div class="current__cardsContainer">
+            <div class="card" style="width: 18rem;">
+                <form action="api/carts/{{../user.user.cart}}/product/{{this.id}}"method="post">
+                <img src="https://stylewatchio.vtexassets.com/arquivos/ids/175815/RT123591_00.jpg?v=1773371444" class="card-img-top card prods__img" alt="Gafas de sol">
+                    <div class="card-body">
+                        <h5 class="card-title">{{this.title}}</h5>
+                        <p class="card-text">{{this.description}}</p>
+                        <p class="card-text">Precio: ${{this.price}}</p>
+                        <p class="card-text">Marca: {{this.marca}}</p>
+                        <p class="card-text">Stock: {{this.stock}}</p>
+                        <button class="btn btn-primary" type="submit">AddToCart</button>
+                    </div>
+                        </form>
+            </div>
+
+            </div>
+            {{/each}}
+
+            {{else}}
+            <h3>Usted aun no ha cargado sus productos</h3>  
+            {{/if}}
+
+                            
+                        <h3>Desea cambiar su modo de usuario? Si es PREMUM pasara a modo USER y viceversa</h3>
+                    <form action="api/users/premium/{{user.user._id}}" method="post">
+                <button class="btn btn-primary" type="submit">Cambiar</button>
+                        </form>
+
+</section>
+
+<script src="/js/index.js"></script>

@@ -1,0 +1,220 @@
+paths:
+  /api/products/:
+    get:
+      summary: Listar todos los productos
+      security:
+        - bearerAuth: []
+          roles:
+            - admin
+      tags:
+        - Products
+      responses:
+        200:
+          description: Lista de Productos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Products'
+        500:
+          description: Error del servidor
+    post:
+      summary: Creando y añadiendo productos nuevos
+      tags:
+        - Products
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/requestBodies/addProduct'
+      responses:
+        200:
+          description: Producto agregado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Products'
+        
+        500:
+          description: Error del servidor
+  /api/products/{:pid}:
+    get:
+      summary: Obtener un producto por su ID
+      tags:
+        - Products
+      parameters:
+        - in: path
+          name: pid
+          required: true
+          description: ID del producto
+          schema:
+            type: ObjectId
+      responses:
+        200:
+          description: Producto encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Products'
+        404:
+          description: Producto no encontrado
+        500:
+          description: Error del servidor  
+    put:
+      summary: Actualizar producto por ID 
+      tags:
+        - Products
+      parameters:
+        - in: path
+          name: pid
+          required: true
+          description: ID del producto
+          schema:
+            type: ObjectId
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/requestBodies/addProduct'
+      responses:
+        200:
+          description: Producto actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Products'
+        
+        500:
+          description: Error del servidor
+    delete:
+      summary: eliminar producto por ID 
+      tags:
+        - Products
+      parameters:
+        - in: path
+          name: pid
+          required: true
+          description: ID del producto
+          schema:
+            type: ObjectId
+      responses:
+        200:
+          description: Producto eliminado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Products'
+        
+        500:
+          description: Error del servidor     
+components:
+  schemas:
+    Products:
+      type: object
+      properties:
+        _id:
+          type: ObjectId
+          description: ID del Producto (autogenerado por MongoDB)
+        title:
+          type: string
+          description: Nombre del Producto
+        description:
+          type: string
+          description: Descripción del producto
+        price:
+          type: number
+          description: Precio del producto
+        thumbnail:
+          type: string
+          description: url de img miniatura
+        code:
+          type: number
+          description: codigo de producto
+        stock:
+          type: number
+          description: cantidad de stock del producto
+        status:
+          type: boolean
+          description: estado del producto
+        marca:
+          type: string
+          description: Marca del producto
+        carts:
+          type: array
+          description: Id de carts donde se ha agregado el producto
+        ownerAdm:
+          type: string
+          description: se define al campo como admin si es que el producto es creado por un usuario admin. Por defecto null si no llega el dato
+        owner:
+          type: ObjectId
+          description: se completa este campo con el id del usuario de tipo owner que ha creado el producto. Por defecto null si no llega el dato
+      example:
+        id: ObjectId(5f9b2b3b9c4c9b1b2c9b1b2c)
+        title: "Lentes de Sol"
+        description: "Lentes de sol polarizados"
+        price: 78500
+        thumbnail: "url"
+        code: 8855221144
+        stock: 5
+        status: true
+        marca: "levis"
+        carts: []
+        owner: 650f5a563ceb9f7d4297643e
+
+  requestBodies:
+    addProduct:
+      type: object
+      properties:
+        title:
+          type: String
+          description: "Nombre del producto"
+        description:
+          type: String
+          description: "descripción del producto"
+        price:
+          type: number
+          description: "Precio del producto"
+        thumbnail:
+          type: String
+          description: "Miniatura del producto"
+        code:
+          type: number
+          description: "Codigo del producto"
+        stock:
+          type: number
+          description: "stock disponible del producto"
+        status:
+          type: boolean
+          description: "estado del producto"
+        marca:
+          type: String
+          description: "Marca del producto"
+        carts:
+          type: ObjectId
+          description: "id referenciando al carrito donde será agregado el producto"
+        owner:
+          type: ObjectId
+          description: "Id del usser que creo el producto"
+      example:
+        title: "Lentes de Sol"
+        description: "Lentes de sol polarizados"
+        price: 78500
+        thumbnail: "url"
+        code: 8855221144
+        stock: 5
+        status: true
+        marca: "levis"
+        carts: []
+        owner: 650f5a563ceb9f7d4297643e
+    updateProduct:
+      type: object
+      properties:
+        precio:
+          type: number
+          description: "precio del producto"
+        stock:
+          type: number
+          description: "stock del producto"    

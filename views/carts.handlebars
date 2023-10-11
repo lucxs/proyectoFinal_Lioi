@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrito</title>
+</head>
+<body>
+
+        <h1>carrito</h1>
+        <main>
+        <seccion class="prods">
+        {{#each cartById.products}}
+
+            <div class="card prods__cards" style="width: 18rem;">
+                <img src="https://stylewatchio.vtexassets.com/arquivos/ids/175815/RT123591_00.jpg?v=1773371444" class="card-img-top card prods__img" alt="Gafas de sol">
+                    <div class="card-body">
+                        <h5 class="card-title">{{this.product.title}}</h5>
+                        <p class="card-text">{{this.product.description}}</p>
+                        <p class="card-text">Precio: ${{this.product.price}}</p>
+                        <p class="card-text">Marca: {{this.product.marca}}</p>
+                        <p class="card-text">Cantidad a comprar:</p> <input type="number" value="{{this.quantity}}" id="SelectQuantity">
+                             </select>
+                           
+                        
+                        <button class="btn btn-primary" onclick="UpdateQProdFromCart('/api/carts/{{../user.cid}}/product/{{this.product._id}}')">actualizar cantidad</button>
+                       
+                        
+                        <button class="btn btn-primary" onclick="deleteProdOnCart('/api/carts/{{../user.cid}}/product/{{this.product._id}}')">Eliminar del carrito</button>
+                        
+                    </div>
+            </div>
+            {{/each}}
+                
+    </seccion>
+                <button class="btn btn-primary" onclick="purcharse('/api/carts/{{../user.cid}}/purcharse')">finalizar compra</button>
+                <button class="btn btn-primary" onclick="emptyCart('/api/carts/{{user.cid}}')">vaciar carrito</button>
+
+        </main>
+            
+<script src="/js/cartScript.js"></script>
+</body>
+</html>

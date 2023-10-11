@@ -1,0 +1,59 @@
+<main id="listProductsHome">
+
+
+    <h1>Home</h1>
+
+    <h2>Todos nuestros productos</h2>
+
+    {{#if user}}
+        
+    <h3>welcome {{user.name}}, ¡¡Usted tiene privilegios de: {{user.role}}</h3>
+        
+    {{/if}}
+
+    <seccion class="prods">
+
+        {{#each prodsPaginate.docs}}
+
+            <div class="card prods__cards" style="width: 18rem;">
+              
+                <form action="api/carts/{{../user.cid}}/product/{{this.id}}"method="post">
+                <img src="https://stylewatchio.vtexassets.com/arquivos/ids/175815/RT123591_00.jpg?v=1773371444" class="card-img-top card prods__img" alt="Gafas de sol">
+                    <div class="card-body">
+                        <h5 class="card-title">{{this.title}}</h5>
+                        <p class="card-text">{{this.description}}</p>
+                        <p class="card-text">Precio: ${{this.price}}</p>
+                        <p class="card-text">Marca: {{this.marca}}</p>
+                        <p class="card-text">Stock: {{this.stock}}</p>
+                        <button class="btn btn-primary" type="submit">AddToCart</button>
+                    </div>
+                    </form>
+
+                
+            </div>
+            {{/each}}
+    
+            
+    </seccion>
+
+    <nav aria-label="Page navigation example">
+  <ul class="pagination">
+   {{#if prodsPaginate.hasPrevPage}} <li class="page-item"> {{else}}<li class="page-item disabled">{{/if}}
+      <a class="page-link" href="?limit={{prodsPaginate.limit}}&page={{prodsPaginate.prevPage}}&sort={{prodsPaginate.sort}}{{#if prodsPaginate.query}}&marca={{prodsPaginate.query}}{{else}}&?marca={{prodsPaginate.query}}{{/if}}" aria-label="Previous">
+        <span aria-hidden="true">&laquo;</span>
+      </a>
+    </li>
+    <li class="page-item"><a class="page-link">{{prodsPaginate.page}}</a></li>
+
+    {{#if prodsPaginate.hasNextPage}} <li class="page-item"> {{else}}<li class="page-item disabled">{{/if}}
+      <a class="page-link" href="?limit={{prodsPaginate.limit}}&page={{prodsPaginate.nextPage}}&sort={{prodsPaginate.sort}}{{#if prodsPaginate.query}}&marca={{prodsPaginate.query}}{{else}}&?marca={{prodsPaginate.query}}{{/if}}" aria-label="Next">
+        <span aria-hidden="true">&raquo;</span>
+      </a>
+    </li>
+  </ul>
+</nav>
+
+
+</main>
+
+<script src="/socket.io/socket.io.js"></script>

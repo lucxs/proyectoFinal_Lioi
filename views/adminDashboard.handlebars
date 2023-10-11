@@ -1,0 +1,106 @@
+
+<h1>Admin dashboard</h1>
+
+
+<section>
+
+<form action="" method="">
+
+    <label>Agregar Products</label>
+    <br>
+    <br>
+    <label for="title">Title Product:</label>
+    <br>
+    <br>
+    <input type="text" id="name" placeholder="title">
+    <br>
+    <br>
+    <label for="description">Description:</label>
+    <br>
+    <br>
+    <input type="text" id="description" placeholder="description">
+    <br>
+    <br>
+    <label for="price">Price:</label>
+    <br>
+    <br>
+    <input type="number" id="price" placeholder="price">
+    <br>
+    <br>
+    <label for="thumbnail">thumbnail:</label>
+    <br>
+    <br>
+    <input type="text" id="thumbnail" placeholder="thumbnail">
+    <br>
+    <br>
+    <label for="code">Code:</label>
+    <br>
+    <br>
+    <input type="number" id="code" placeholder="code">
+    <br>
+    <br>
+    <label for="stock">Stock:</label>
+    <br>
+    <br>
+    <input type="number" id="stock" placeholder="stock">
+    <br>
+    <br>
+    <label for="status">Status:</label>
+    <br>
+    <br>
+    <input type="text" id="status" placeholder="true/false">
+    <br>
+    <br>
+    <label for="category">Category:</label>
+    <br>
+    <br>
+    <input type="text" id="marca" placeholder="marca">
+    <br>
+    <br>
+    {{#if userID}}
+    <label for="rol">Rol de usuario:</label>
+    <br>
+    <br> 
+    <select name="roleOwner">
+      <option name="owner"value="{{userID}}" id="dataOwner">owner</option>
+    </select>
+    {{else}}
+    <select name="roleOwner">
+      <option name="owner"value="admin" id="dataOwner">admin</option>
+    </select>
+    {{/if}}
+    <br>
+    <br>
+    <button onclick="addProduct()">Enviar</button>
+    </form>
+     
+
+    
+
+
+
+<hr>
+        <h3>Delete Product</h3>
+<form >
+
+        <label for="">Selecciona ID prod a eliminar:</label>
+            <br><br>
+        <input type="text" id="idprod" placeholder="id prod">
+
+        <button onclick="deleteProd()">Eliminar</button>
+</form>
+
+<hr>
+
+
+
+<section id="listProductsRealTime" class="listProductsCards">
+
+
+
+</section>
+
+
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/index.js"></script>
