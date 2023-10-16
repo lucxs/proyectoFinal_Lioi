@@ -1,10 +1,10 @@
 
 export default class UserService{
 
-        constructor(dao){
+        constructor(dao, LoginControlsDao){
 
          this.dao = dao;
-
+        this.LoginControlsDao = LoginControlsDao
         }
 
         async getUsers(){
@@ -25,17 +25,6 @@ export default class UserService{
             }
     
 
-    }
-
-    async getAllUsers(){
-
-        try {
-                return await this.dao.getAllUsers()
-            
-        } catch (error) {
-
-            req.logger.error("Error capa de servicio Getallusers: ", error);
-        }
     }
 
     async getById(id){
@@ -63,7 +52,29 @@ export default class UserService{
         
     }
 
-    
+    async getloggingsControl(){
+        try {
+            return await this.LoginControlsDao.getloggingsControl()
+        } catch (error) {
+            console.log("error user.service --> loggingsControl: ",error);
+        }
+    }
+
+    async loggingsControl(data){
+        try {
+            return await this.LoginControlsDao.loggingsControl(data)
+        } catch (error) {
+            console.log("error user.service --> loggingsControl: ",error);
+        }
+    }
+
+    async deleteUsers(data){
+        try {
+            return await this.dao.deleteUsers(data)
+        } catch (error) {
+            console.log("error user.service --> deleteUsers: ",error);
+        }
+    }
 }
 
 

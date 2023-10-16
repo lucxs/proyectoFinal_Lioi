@@ -1,11 +1,9 @@
 import { UsersModel } from "../models/userJWT.model.js";
-
 class UserDao{
 
 constructor(){
 
      this.model = UsersModel;
-
 }
 
 async getUsers(){
@@ -61,6 +59,14 @@ async updateUserRole(uid, role){
     }
 
     
+}
+
+async deleteUsers(data){
+    try {
+        return await this.model.deleteMany({ $or: data })
+    } catch (error) {
+        
+    }
 }
 
 }

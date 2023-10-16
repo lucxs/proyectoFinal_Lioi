@@ -1,5 +1,6 @@
 import UserService from "../services/users.service.js";
 import userDao from "../dao/user.dao.js";
+import LoginControlsDao from "../dao/loggingsControl.dao.js";
 import UserRegisterRepository from "../repositories/users/register.repositories.js";
 import MailingService from "../services/mail.service.js";
 import { hashPassword,comparePassword } from '../utils/encript.util.js';
@@ -8,7 +9,7 @@ class UsersController {
     constructor(){
         //Creo en el constructor el dao con filtro por DTO
         this.daoFiltered = new UserRegisterRepository(userDao)
-        this.service = new UserService(userDao);
+        this.service = new UserService(userDao, LoginControlsDao);
         this.MailingService = new MailingService();
     }
 
@@ -47,7 +48,7 @@ class UsersController {
     }
 
     async getByEmail(email){
-        const allUsers =await this.service.getAllUsers()
+        const allUsers =await this.service.getUsers()
                 const userByEmail = allUsers.find((user)=>user.email === email)
                 return userByEmail;
     }
@@ -108,9 +109,34 @@ class UsersController {
             }
     }
 
-    async deleteUsers(){
+            //registro y control de login
 
-            
+            async getloggingsControl(){
+
+                    try {
+                            return this.service.getloggingsControl()
+                    } catch (error) {
+                        console.log("error user.controller --> getloggingsControl: ",error);
+                    }
+
+            }
+
+            async loggingsControl(data){
+                try {
+                    return await this.service.loggingsControl(data)
+                } catch (error) {
+                    console.log("error user.controller --> loggingsControl: ",error);
+                }
+
+            }
+
+    async deleteUsers(data){
+        try {
+            return await this.service.deleteUsers(data)
+        } catch (error) {
+            console.log("error user.controller --> deleteUsers: ",error);
+        }
+       
 
     }
 

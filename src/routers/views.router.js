@@ -3,13 +3,14 @@ import prodsController from '../controllers/products.controller.js';
 import {middlewarePassportJWT, middlewarePassportJWTAdmin,middlewarePassportJWTUser, middlewareAccessToCart,middlewarePassportUser} from '../middlewares/auth.middleware.js'
 import cartsController from '../controllers/carts.controller.js';
 import userController from '../controllers/user.controller.js';
+import MailingService from "../services/mail.service.js";
 
+const mailingService = new MailingService();
 const viewRouter =express();
 
 
 //Paso la lista de productos a home.handlebars y el user actualmente loggeado
 viewRouter.get('/',middlewarePassportUser, async(req, res)=>{
-            
             
             let LimitProducts = req.query.limit;
             let pageProducts = req.query.page;
@@ -23,6 +24,69 @@ viewRouter.get('/',middlewarePassportUser, async(req, res)=>{
              "cid":req.user.user.cart,
             }
             }
+
+            //Aca realizo la comprobación del registro de loggins según la ultima conexión
+
+            const logginCntrl = await userController.getloggingsControl()
+            console.log("Este es el registro completo de loggins antiguos: ",logginCntrl);
+            const fechaActual = new Date();
+            // Filtra los elementos del array que sean menores a 30 minutos
+            const dosDiasEnMilisegundos = 2 * 24 * 60 * 60 * 1000;
+            const dosMinutosEnMilisegundos = 2 * 60 * 1000;
+            const treintaMinsEnMili = 30 * 60 * 1000
+            const filtered = logginCntrl.filter(item => (fechaActual.getTime() - item.date.getTime()) < dosMinutosEnMilisegundos);
+            
+            console.log("Los filtrados de filtered son aquellos que tuvieron actividad en la ultima media hora: ", filtered);
+            if (filtered.length > 0) {
+                    const allUsers = await userController.getUsers()
+                    const correosFiltrados = filtered.map(item => item.email);
+                    const userFilter = allUsers.filter((user)=> !correosFiltrados.includes(user.email))
+                    console.log("usuarios: ", allUsers);
+                    console.log("userFilter que deben ser eliminados por falta de inactividad: ", userFilter);
+                    //Emails de usuario a eliminar
+                    const emailsDroppingFilter = userFilter.map((usr)=>{
+                        return {'email': usr.email}
+                    })
+                    console.log("Emails de usuario a eliminar:",emailsDroppingFilter );
+                        
+                    //Por cada email envio un email informando que sea eliminada la cuenta, elimino la cuenta: 
+                    emailsDroppingFilter.forEach(email => {
+                        
+                        const mailOptions = {
+                            from: 'Optics <lioilucas75@gmail.com>',
+                            to: `${email.email}`,
+                            subject:`Baja de usuario`,
+                            html: `<h1>Lamentamos informarle que su usuario ha sido dado de baja por falta inactividad mayor a dos dias</h1>`    
+                        };
+                                userController.deleteUsers(emailsDroppingFilter)
+                                 mailingService.sendMail(mailOptions)
+                    });
+                    
+
+            }else{
+                const allUsers = await userController.getUsers()
+                console.log("usuarios: ", allUsers);
+                //Emails de usuario a eliminar
+                const emailsDroppingFilter = allUsers.map((usr)=>{
+                    return {'email': usr.email}
+                })
+                console.log("Emails de usuario a eliminar, en este caso todos, ya que ninguno tuvo actividad los ultimos dos mins:",emailsDroppingFilter );
+                    
+                //Por cada email envio un email informando que sea eliminada la cuenta, elimino la cuenta: 
+                // emailsDroppingFilter.forEach(email => {
+                    
+                //     const mailOptions = {
+                //         from: 'Optics <lioilucas75@gmail.com>',
+                //         to: `${email.email}`,
+                //         subject:`Baja de usuario`,
+                //         html: `<h1>Lamentamos informarle que su usuario ha sido dado de baja por falta inactividad mayor a dos dias</h1>`    
+                //     };
+                //                     userController.deleteUsers(emailsDroppingFilter)
+                //            return  mailingService.sendMail(mailOptions)
+                // });
+
+            }       
+            ///--------------------------------------------------------------------///
              
     try {
 
@@ -126,7 +190,7 @@ viewRouter.get('/register',(req,res)=>{
 viewRouter.get('/login',(req,res)=>{
 
          res.render('login')
-    
+        
 })
 
 //Reset password

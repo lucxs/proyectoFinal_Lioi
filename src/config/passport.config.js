@@ -58,7 +58,7 @@ new LocalStrategy(
 
         try {
                 const user = await userController.getByEmail(username);
-
+                
                 if (!user) {
                     return done(null, false, {message: 'User not found'});
                     
