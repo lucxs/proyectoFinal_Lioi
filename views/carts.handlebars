@@ -9,6 +9,17 @@
 
         <h1>carrito</h1>
         <main>
+                {{!-- Si result es true, mostrar un mensaje de éxito --}}
+{{#if result}}
+    <div class="success-message">Compra realizada con éxito
+        <p>test</p>
+        <p>Codigo de operación: {{result.code}}</p>
+        <p>Monto total : ${{result.amount}}</p>
+        <p>Fecha de compra: {{result.purcharse_datatime}}</p>
+    </div>
+{{/if}}
+
+            
         <seccion class="prods">
         {{#each cartById.products}}
 

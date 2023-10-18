@@ -13,6 +13,12 @@ class TicketDAO{
 
 }
 
+async getTicketByCode(data){
+
+    return await this.model.findOne({code:data})
+
+}
+
 async createTicket(data){
 
         return await this.model.create(data)

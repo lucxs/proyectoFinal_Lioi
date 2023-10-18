@@ -141,7 +141,7 @@ try {
 
     const cartById = await cartsController.getCartOnviews(cid)
 
-    req.logger.debug(cartById);
+    req.logger.debug("desde view de cart: ",cartById);
     
     res.render('carts', {cartById, user});
 

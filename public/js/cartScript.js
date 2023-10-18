@@ -102,7 +102,7 @@ function UpdateQProdFromCart(path){
          alert("Operación exitosa")
          setTimeout(() => {
           location.reload();
-          }, 1000);
+          }, 2000);
         }else{
          console.log('La solicitud falló');
         }

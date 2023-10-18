@@ -12,6 +12,14 @@ export default class TicketServices {
              
      }
 
+     async getTicketByCode(data){
+
+      return await this.dao.getTicketByCode(data);
+      
+}
+
+     
+
      async createTicket(data){
         
         return await this.dao.createTicket(data);

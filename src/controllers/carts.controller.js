@@ -225,10 +225,10 @@ async updateProdQuantity(cid,pid, quantityUpdated){
                                 const uniqueCode = generateProductCode(16)
                               
                           await this.ticketService.createTicket({"code":uniqueCode, "purcharse_datatime":new Date(), "amount":totalSum})
-                          //const result = await this.ticketService.getTickets(uniqueCode)
+                          const result = await this.ticketService.getTicketByCode(uniqueCode)
 
     
-                      return uniqueCode
+                      return result
                     
                   } catch (error) {
                     req.logger.error("Error en carts.Controller - Metodo purcharseProccess:",error);
