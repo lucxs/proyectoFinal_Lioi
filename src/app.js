@@ -45,7 +45,7 @@ const swaggerOptions = {
 
   const spects = swaggerJsDoc(swaggerOptions);
 
-const httpServer = app.listen(config.port, ()=> console.log("Escuchando puerto ",config.port))
+const httpServer = app.listen(config.PORT, ()=> console.log("Escuchando puerto ",config.PORT))
 
 const socketServer = new Server(httpServer);
 

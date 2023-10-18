@@ -4,7 +4,7 @@ dotenv.config();
 
 export default {
         ENVIROMENT:process.env.ENVIROMENT,
-        port: process.env.PORT,
+        PORT: process.env.PORT,
         mongoUrl: process.env.MONGO_URL,
         sessionSecret: process.env.SESSION_SECRET,
         COOKIE_PARSER: process.env.COOKIE_PARSER,
