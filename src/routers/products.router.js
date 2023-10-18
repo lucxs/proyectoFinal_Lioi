@@ -4,7 +4,8 @@ import { generateProducts } from "../utils/generate.js";
 import CustomErrors from "../tools/CustomErrors.js";
 import EErros from "../tools/EErrors.js";
 import { middlewarePassportUserOnlyRoleAndId } from "../middlewares/auth.middleware.js";
-
+import MailingService from "../services/mail.service.js";
+const mailingService = new MailingService();
 
 const prodsRouter = Router();
 
@@ -120,18 +121,32 @@ try {
     if(req.user.role ==='premium'){
         
         const allprods = await prodsController.getProds()
-        const prodsWithOwner = allprods.find((prod)=>prod.owner == userID)
-
-            if (!prodsWithOwner == undefined) {
-                console.log("ESTE ES el prod con propietario:",prodsWithOwner._id.toString());
-
-                    prodsController.deleteProduct(prodsWithOwner._id.toString());
+        const prodsWithOwner =await allprods.filter((prod)=>prod.owner == userID)
+            if (prodsWithOwner.length > 0) {
+                const prodToDelete =await prodsWithOwner.find((prod)=>prod._id == pid)
+                        console.log("prodToDelete: ",prodToDelete);
+                        if (prodToDelete != undefined) {
+                            prodsController.deleteProduct(prodToDelete._id.toString())
+                            const mailOptions = {
+                        from: 'Optics <lioilucas75@gmail.com>',
+                        to: `${req.user.email}`,
+                        subject:`Producto eliminado`,
+                        html: `<h1>Usted a eliminado un producto</h1>`    
+                    };
+            
+                             mailingService.sendMail(mailOptions)
 
                     console.log({"Producto de ID":pid+" eliminado"});
-                    res.status(200).send({"Producto de ID":pid+" eliminado"})
-            }else{
-                console.log({"message":"Error, usted no puede borrar ese producto, no es de su propiedad"});
+                    res.status(200).render({"Producto de ID":pid+" eliminado"})
+                        }else{
+                            console.log({"message":"Error, usted no puede borrar ese producto, no es de su propiedad"});
                 res.status(401).send({"message":"Error, usted no puede borrar ese producto, no es de su propiedad"})
+                        }
+                    
+                    
+            }else{
+                console.log({"message":"Error, usted no tiene productos de su propiedad"});
+                res.status(401).send({"message":"Error, usted no tiene productos de su propiedad"})
             }
         
 

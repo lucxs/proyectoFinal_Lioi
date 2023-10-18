@@ -2,6 +2,8 @@ import cartsDAO from "../dao/carts.dao.js";
 import productsDAO from "../dao/products.dao.js";
 import CartsService from "../services/cart.service.js";
 import ProductsServices from "../services/products.service.js";
+import TicketServices from "../services/ticket.service.js";
+import ticketDAO from "../dao/ticket.dao.js";
 
 
 class CartsController {
@@ -9,6 +11,7 @@ class CartsController {
 
         this.cartService = new CartsService(cartsDAO);
         this.prodsService = new ProductsServices(productsDAO);
+        this.ticketService = new TicketServices(ticketDAO)
     }
 
 
@@ -146,65 +149,86 @@ async updateProdQuantity(cid,pid, quantityUpdated){
 
                   try {
                     const cart = await this.cartService.getCartbyId(cid)
-                    
-                    //Hago una lista de los id de prods que hay en el carrito
-                      const IdsProdsFromCarts = cart.products.map((prod)=>{
-                      
-                        return  prod.product
-
-                      })
-
+                  
                       //Products quantity from cart
 
-                      const QntyProdsFromCarts = cart.products.map((prod)=>{
+                      const ProdsFromCarts =await cart.products.map((prod)=>{
                       
                         return  {"id":prod.product,"quantity":prod.quantity}
 
                       })
-                      
+                         console.log(ProdsFromCarts);
+                         console.log(ProdsFromCarts.length)
+                          
                           //Array de prods para ticket
                           const prodsPurcharsed = []
 
                           //Array de prods sin stock o que no alcanza segun la cantidad
                           const OutOfStock = []
 
-                          for (let i = 0; i < QntyProdsFromCarts.length; i++) {
+                          function generateProductCode(length) {
+                            const characters = '0123456789';
+                            let result = '';
+                            const charactersLength = characters.length;
+                            for (let i = 0; i < length; i++) {
+                                result += characters.charAt(Math.floor(Math.random() * charactersLength));
+                            }
+                            return result;
+                        }
+
+                          for (let i = 0; i < await ProdsFromCarts.length; i++) {
                               //guardo el id
-                              let pid = QntyProdsFromCarts[i].id.toString()
+                              let pid =await ProdsFromCarts[i].id.toString()
                               //Guardo el valor del quantity
-                              let newValue = QntyProdsFromCarts[i].quantity.toString()
+                              let newValue =await ProdsFromCarts[i].quantity.toString()
 
-                                //Se lo paso al metodo que hace el descuento del stock
-                             const ResultprodsUpdated =await this.#updateStockProduct(pid, newValue)
-                                // console.log(ResultprodsUpdated);
+                          //       //Se lo paso al metodo que hace el descuento del stock
+                                  const ResultprodsUpdated =await this.#updateStockProduct(pid, newValue)
+                                  console.log("Acá muestro el resultado del descuento del stock de los prods: ",ResultprodsUpdated);
 
-                                  //Si ResultprodsUpdated.acknowledged devuelve true lo guarda en un nuevo array para el ticket de compra
-                                if (ResultprodsUpdated.acknowledged === true) {
-                                        let prodFiltered = await this.prodsService.getSomeProdsById(pid)
-                                        prodsPurcharsed.push(prodFiltered)
-                                        req.logger.debug("Productos para el ticket de compra: ",prodsPurcharsed);
+                          //         //Si ResultprodsUpdated.acknowledged devuelve true lo guarda en un nuevo array para el ticket de compra
+                                 if (ResultprodsUpdated.acknowledged === true) {
+                                         let prodFiltered = await this.prodsService.getSomeProdsById(pid)
+                                         const prodsPurcharsedData = prodFiltered.map((prod)=>{
 
-                                        //Lo saco del carrito
-                                        for (let i = 0; i < array.length; i++) {
-                                          const element = array[i];
-                                          
-                                        }
-                                        this.deleteOnCartAProd(cid, pid)
+                                          return {
+                                                    "id":pid,
+                                                    "price":prod.price,
+                                                    "quantity":newValue,
 
-                                        return prodsPurcharsed
-                                }
+                                                  }
+        
+                                        })
+                                         prodsPurcharsed.push(prodsPurcharsedData)
+
+                                         // req.logger.debug("Productos para el ticket de compra: ",prodsPurcharsed);
+                                         console.log("Productos para el ticket de compra: ",prodsPurcharsed);
+                                         //Lo saco del carrito
+                          
+                                        await this.deleteOnCartAProd(cid, pid)
+                                 }
                                   if (!ResultprodsUpdated.acknowledged === true) {
                                     let prodFiltered1 = await this.prodsService.getSomeProdsById(pid)
                                   OutOfStock.push(prodFiltered1)
-                                  req.logger.warning("Prods fuera de stock:",prodFiltered1);
+                                  // req.logger.warning("Prods fuera de stock:",prodFiltered1);
+                                  console.log("Prods fuera de stock:",prodFiltered1);
                                   }
                                 
                             
-                          }
+                           }
 
-                          
+                           const totalSum = prodsPurcharsed.reduce((accumulator, currentArray) => {
+                            const priceTimesQuantity = currentArray.reduce((acc, { price, quantity }) => acc + price * parseInt(quantity), 0);
+                            return accumulator + priceTimesQuantity;
+
+                        }, 0);
+                                const uniqueCode = generateProductCode(16)
                               
-                      return  QntyProdsFromCarts
+                          await this.ticketService.createTicket({"code":uniqueCode, "purcharse_datatime":new Date(), "amount":totalSum})
+                          //const result = await this.ticketService.getTickets(uniqueCode)
+
+    
+                      return uniqueCode
                     
                   } catch (error) {
                     req.logger.error("Error en carts.Controller - Metodo purcharseProccess:",error);

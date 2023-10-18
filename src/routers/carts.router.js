@@ -121,12 +121,10 @@ cartsRouter.get('/:cid', async(req,res)=>{
 
                         try {
                                 const result = await cartsController.purcharseProccess(req.params.cid)
-                                req.logger.debug(result.acknowledged);
-                                if (result.acknowledged === true) {
-                                        res.status(200).send(result) 
-                                }else{
-                                        res.send(result)
-                                }
+                                req.logger.debug("Si todo sale bien debo de recibir el codigo de operacion de compra: ",result);
+                                        console.log(result);
+                                       return res.status(200).send({"Compra realizada con exito":result})
+                                
                                  
                                 
                         } catch (error) {

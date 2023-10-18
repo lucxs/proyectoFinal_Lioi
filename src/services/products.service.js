@@ -54,10 +54,10 @@ export default class ProductsServices {
                   
     }
 
-    updateStockProduct(pid, newValue){
+    async updateStockProduct(pid, newValue){
             
 
-      return this.dao.updateProductStock(pid, newValue)
+      return await  this.dao.updateProductStock(pid, newValue)
          
 }
 

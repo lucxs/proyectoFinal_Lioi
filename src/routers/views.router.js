@@ -30,19 +30,20 @@ viewRouter.get('/',middlewarePassportUser, async(req, res)=>{
             const logginCntrl = await userController.getloggingsControl()
             console.log("Este es el registro completo de loggins antiguos: ",logginCntrl);
             const fechaActual = new Date();
-            // Filtra los elementos del array que sean menores a 30 minutos
+            // Filtra los elementos del array que sean menores a 2 dias
             const dosDiasEnMilisegundos = 2 * 24 * 60 * 60 * 1000;
-            const dosMinutosEnMilisegundos = 2 * 60 * 1000;
-            const treintaMinsEnMili = 30 * 60 * 1000
-            const filtered = logginCntrl.filter(item => (fechaActual.getTime() - item.date.getTime()) < dosMinutosEnMilisegundos);
+            const filtered = logginCntrl.filter(item => (fechaActual.getTime() - item.date.getTime()) < dosDiasEnMilisegundos);
             
-            console.log("Los filtrados de filtered son aquellos que tuvieron actividad en la ultima media hora: ", filtered);
+            console.log("Los filtrados de filtered son aquellos que tuvieron actividad en la ultima media hora: ", filtered, "-->", filtered.length);
             if (filtered.length > 0) {
                     const allUsers = await userController.getUsers()
                     const correosFiltrados = filtered.map(item => item.email);
                     const userFilter = allUsers.filter((user)=> !correosFiltrados.includes(user.email))
                     console.log("usuarios: ", allUsers);
-                    console.log("userFilter que deben ser eliminados por falta de inactividad: ", userFilter);
+                    console.log("userFilter que deben ser eliminados por inactividad: ", userFilter);
+                    //Entonces, si hay usuarios pasados los dos dias de inactividad
+                    if (userFilter.length > 0) {
+                        
                     //Emails de usuario a eliminar
                     const emailsDroppingFilter = userFilter.map((usr)=>{
                         return {'email': usr.email}
@@ -61,31 +62,11 @@ viewRouter.get('/',middlewarePassportUser, async(req, res)=>{
                                 userController.deleteUsers(emailsDroppingFilter)
                                  mailingService.sendMail(mailOptions)
                     });
-                    
+                }else{
+                    console.log("Todos los usuarios se mantienen activos");
+                }
 
-            }else{
-                const allUsers = await userController.getUsers()
-                console.log("usuarios: ", allUsers);
-                //Emails de usuario a eliminar
-                const emailsDroppingFilter = allUsers.map((usr)=>{
-                    return {'email': usr.email}
-                })
-                console.log("Emails de usuario a eliminar, en este caso todos, ya que ninguno tuvo actividad los ultimos dos mins:",emailsDroppingFilter );
-                    
-                //Por cada email envio un email informando que sea eliminada la cuenta, elimino la cuenta: 
-                // emailsDroppingFilter.forEach(email => {
-                    
-                //     const mailOptions = {
-                //         from: 'Optics <lioilucas75@gmail.com>',
-                //         to: `${email.email}`,
-                //         subject:`Baja de usuario`,
-                //         html: `<h1>Lamentamos informarle que su usuario ha sido dado de baja por falta inactividad mayor a dos dias</h1>`    
-                //     };
-                //                     userController.deleteUsers(emailsDroppingFilter)
-                //            return  mailingService.sendMail(mailOptions)
-                // });
-
-            }       
+             }       
             ///--------------------------------------------------------------------///
              
     try {

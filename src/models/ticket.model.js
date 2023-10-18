@@ -8,7 +8,10 @@ code:{
 },
 purcharse_datatime:Date,
 amount:Number,
-purcharser:String
+purcharser:{
+    type: String,
+    default:"user"
+}
 })
 
 export const TicketModel = mongoose.model("ticket", ticketSchema)

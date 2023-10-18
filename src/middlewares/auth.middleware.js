@@ -27,9 +27,10 @@ const middlewarePassportUserOnlyRoleAndId = async (req, res, next) => {
 
 		if (!usr) {
 			req.user = null;
+
 		}
 
-		req.user = {"id":usr.user._id, "role":usr.user.role};
+		req.user = {"id":usr.user._id, "role":usr.user.role, "email":usr.user.email};
 		next();
 	})(req, res, next);
 };
@@ -116,6 +117,10 @@ const middlewareAccessToCart = async (req, res, next) => {
 
 		if (err) {
 			next(err);
+		}
+
+		if (!usr) {
+            return res.send({"message":"error de usuario"});
 		}
 
 		const prodID =await req.params.pid;

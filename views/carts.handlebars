@@ -33,7 +33,7 @@
             {{/each}}
                 
     </seccion>
-                <button class="btn btn-primary" onclick="purcharse('/api/carts/{{../user.cid}}/purcharse')">finalizar compra</button>
+                <button class="btn btn-primary" onclick="purcharse('/api/carts/{{user.cid}}/purcharse')">finalizar compra</button>
                 <button class="btn btn-primary" onclick="emptyCart('/api/carts/{{user.cid}}')">vaciar carrito</button>
 
         </main>
